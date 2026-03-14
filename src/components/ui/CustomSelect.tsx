@@ -82,7 +82,7 @@ export const CustomSelect = ({
             <>
               {/* Invisible Backdrop to handle 'click outside' */}
               <div
-                className="fixed inset-0 z-[9998] cursor-default"
+                className="fixed inset-0 z-9998 cursor-default"
                 onClick={() => setIsOpen(false)}
               />
 
@@ -96,7 +96,7 @@ export const CustomSelect = ({
                   left: position.left,
                   width: position.width,
                 }}
-                className="absolute z-[9999] bg-neutral-900 border border-white/10 rounded-xl shadow-xl overflow-hidden backdrop-blur-xl"
+                className="absolute z-9999 bg-neutral-900 border border-white/10 rounded-xl shadow-xl overflow-hidden backdrop-blur-xl"
               >
                 <div className="max-h-56 overflow-y-auto ">
                   {options.map((option) => (

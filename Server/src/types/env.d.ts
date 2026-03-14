@@ -5,9 +5,11 @@ declare global {
       PORT?: string;
       CORS_ORIGINS?: string;
       MONGODB_URI?: string;
-      JWT_SECRET?: string;
+      CLERK_PUBLISHABLE_KEY?: string;
+      CLERK_SECRET_KEY?: string;
+      VITE_CLERK_PUBLISHABLE_KEY?: string;
     }
   }
 }
 
-export { };
+export {};

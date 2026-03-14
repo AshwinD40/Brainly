@@ -4,7 +4,7 @@ Brainly is a full-stack "second brain" app for saving links, organizing personal
 
 ## Features
 
-- User authentication with JWT (`signup`, `signin`)
+- User authentication with Clerk (`signup`, `signin`, social providers)
 - Create, view, and delete personal content entries
 - Content types support: `youtube`, `twitter`, `instagram`, `article`, `audio`, `video`, `image`, `other`
 - Shareable brain link with persistent `shareId`
@@ -14,7 +14,7 @@ Brainly is a full-stack "second brain" app for saving links, organizing personal
 ## Tech Stack
 
 - Frontend: React 19, TypeScript, Vite, Tailwind CSS, Axios, React Router
-- Backend: Node.js, Express 5, TypeScript, MongoDB, Mongoose, JWT
+- Backend: Node.js, Express 5, TypeScript, MongoDB, Mongoose, Clerk
 - Tooling: ESLint, Nodemon, TSX, TypeScript compiler
 
 ## Project Structure
@@ -40,6 +40,7 @@ Brainly/
 
 ```env
 VITE_BACKEND_URL=http://localhost:4000
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_...
 ```
 
 ### Backend (`Server/.env`)
@@ -48,7 +49,8 @@ VITE_BACKEND_URL=http://localhost:4000
 NODE_ENV=development
 PORT=4000
 MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>/<database>
-JWT_SECRET=<strong-secret>
+CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
 CORS_ORIGINS=http://localhost:5173
 ```
 
@@ -56,6 +58,8 @@ Notes:
 
 - `VITE_BACKEND_URL` can be set either as `https://host` or `https://host/api/v1`.
 - Backend normalizes this automatically on the frontend API client.
+- Clerk keys are required for frontend and backend auth to work.
+- In local development, the backend also falls back to the repo-root `VITE_CLERK_PUBLISHABLE_KEY` if `Server/.env` does not define `CLERK_PUBLISHABLE_KEY`.
 - Do not commit real secrets to source control.
 
 ## Local Development
@@ -107,12 +111,11 @@ Default local URLs:
 
 Base path: `/api/v1`
 
-- `POST /auth/signup`
-- `POST /auth/signin`
 - `POST /content/createContent` (auth required)
 - `GET /content/user` (auth required)
 - `DELETE /content/:id` (auth required)
 - `POST /brain/share` (auth required)
+- `POST /brain/unshare` (auth required)
 - `GET /brain/:shareId` (public)
 
 ## Production Notes

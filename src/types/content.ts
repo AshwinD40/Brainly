@@ -1,7 +1,9 @@
 export interface Content {
-  _id: string
-  title: string
-  type: string
-  link: string
-  tags?: string[]
+  _id: string;
+  title: string;
+  type: string;
+  link: string;
+  tags?: string[];
+  createdAt?: string;
+  updatedAt?: string;
 }

@@ -1,3 +1,5 @@
+import "./loadEnv.js";
+
 const parsePort = (rawPort: string | undefined): number => {
   if (!rawPort || rawPort.trim().length === 0) {
     return 4000;
@@ -24,7 +26,9 @@ const parseCorsOrigins = (rawOrigins: string | undefined): string[] => {
   return Array.from(new Set(origins));
 };
 
-const getRequiredEnv = (key: "MONGODB_URI" | "JWT_SECRET"): string => {
+const getRequiredEnv = (
+  key: "MONGODB_URI" | "CLERK_SECRET_KEY" | "CLERK_PUBLISHABLE_KEY",
+): string => {
   const value = process.env[key];
   if (!value || value.trim().length === 0) {
     throw new Error(`${key} is not defined`);
@@ -38,5 +42,6 @@ export const ENV = {
   PORT: parsePort(process.env["PORT"]),
   CORS_ORIGINS: parseCorsOrigins(process.env["CORS_ORIGINS"]),
   MONGODB_URI: getRequiredEnv("MONGODB_URI"),
-  JWT_SECRET: getRequiredEnv("JWT_SECRET"),
+  CLERK_SECRET_KEY: getRequiredEnv("CLERK_SECRET_KEY"),
+  CLERK_PUBLISHABLE_KEY: getRequiredEnv("CLERK_PUBLISHABLE_KEY"),
 } as const;

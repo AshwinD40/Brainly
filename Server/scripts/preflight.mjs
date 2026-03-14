@@ -7,8 +7,18 @@ import dotenv from "dotenv";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, "..");
+const workspaceRoot = path.resolve(projectRoot, "..");
 
-dotenv.config({ path: path.join(projectRoot, ".env") });
+for (const envFile of [
+  path.join(projectRoot, ".env"),
+  path.join(workspaceRoot, ".env"),
+]) {
+  dotenv.config({ path: envFile, override: false });
+}
+
+if (!process.env.CLERK_PUBLISHABLE_KEY?.trim() && process.env.VITE_CLERK_PUBLISHABLE_KEY?.trim()) {
+  process.env.CLERK_PUBLISHABLE_KEY = process.env.VITE_CLERK_PUBLISHABLE_KEY.trim();
+}
 
 const errors = [];
 const warnings = [];
@@ -37,7 +47,8 @@ const requireEnv = (key) => {
 };
 
 const mongodbUri = requireEnv("MONGODB_URI");
-const jwtSecret = requireEnv("JWT_SECRET");
+const clerkPublishableKey = requireEnv("CLERK_PUBLISHABLE_KEY");
+const clerkSecretKey = requireEnv("CLERK_SECRET_KEY");
 
 if (mongodbUri) {
   if (!/^mongodb(\+srv)?:\/\//.test(mongodbUri)) {
@@ -49,14 +60,23 @@ if (mongodbUri) {
   }
 }
 
-if (jwtSecret) {
-  const minLength = isProduction ? 32 : 16;
-  if (jwtSecret.length < minLength) {
-    errors.push(`JWT_SECRET must be at least ${minLength} characters.`);
+if (clerkPublishableKey) {
+  if (!/^pk_(test|live)_/.test(clerkPublishableKey)) {
+    warnings.push("CLERK_PUBLISHABLE_KEY does not match expected Clerk key format.");
   }
 
-  if (/^(your_jwt_secret|changeme|change-me|secret)$/i.test(jwtSecret)) {
-    errors.push("JWT_SECRET appears to be a placeholder value.");
+  if (isProduction && !clerkPublishableKey.startsWith("pk_live_")) {
+    errors.push("Use a live Clerk publishable key (pk_live_) in production.");
+  }
+}
+
+if (clerkSecretKey) {
+  if (!/^sk_(test|live)_/.test(clerkSecretKey)) {
+    warnings.push("CLERK_SECRET_KEY does not match expected Clerk key format.");
+  }
+
+  if (isProduction && !clerkSecretKey.startsWith("sk_live_")) {
+    errors.push("Use a live Clerk secret key (sk_live_) in production.");
   }
 }
 
