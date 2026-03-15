@@ -27,6 +27,8 @@ const nodeEnv = process.env.NODE_ENV ?? "development";
 const validNodeEnvs = new Set(["development", "production", "test"]);
 const isProduction = nodeEnv === "production";
 
+const allowTestKeys = process.env.ALLOW_TEST_KEYS === "true";
+
 if (!validNodeEnvs.has(nodeEnv)) {
   errors.push(
     `NODE_ENV must be one of development, production, test. Received "${nodeEnv}".`,
@@ -65,8 +67,10 @@ if (clerkPublishableKey) {
     warnings.push("CLERK_PUBLISHABLE_KEY does not match expected Clerk key format.");
   }
 
-  if (isProduction && !clerkPublishableKey.startsWith("pk_live_")) {
-    errors.push("Use a live Clerk publishable key (pk_live_) in production.");
+  if (isProduction && !allowTestKeys && !clerkPublishableKey.startsWith("pk_live_")) {
+    errors.push(
+      "Use a live Clerk publishable key (pk_live_) in production or set ALLOW_TEST_KEYS=true.",
+    );
   }
 }
 
@@ -75,9 +79,15 @@ if (clerkSecretKey) {
     warnings.push("CLERK_SECRET_KEY does not match expected Clerk key format.");
   }
 
-  if (isProduction && !clerkSecretKey.startsWith("sk_live_")) {
-    errors.push("Use a live Clerk secret key (sk_live_) in production.");
+  if (isProduction && !allowTestKeys && !clerkSecretKey.startsWith("sk_live_")) {
+    errors.push(
+      "Use a live Clerk secret key (sk_live_) in production or set ALLOW_TEST_KEYS=true.",
+    );
   }
+}
+
+if (isProduction && allowTestKeys) {
+  warnings.push("Production is using Clerk test keys (ALLOW_TEST_KEYS=true).");
 }
 
 const rawPort = process.env.PORT?.trim();
