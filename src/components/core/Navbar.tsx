@@ -1,4 +1,4 @@
-import { useAuth, useClerk, useUser } from "@clerk/react-router";
+import { useClerk, useUser } from "@clerk/react-router";
 import { useEffect, useRef, useState } from "react";
 import { IoLogOutOutline, IoPersonCircleOutline } from "react-icons/io5";
 import { Link, useNavigate } from "react-router";
@@ -7,7 +7,6 @@ import { ConfirmationModal } from "../common/confModal";
 
 export const Navbar = () => {
   const { openUserProfile, signOut } = useClerk();
-  const { sessionId } = useAuth();
   const { user } = useUser();
   const navigate = useNavigate();
   const [isMenuOpen, setMenuOpen] = useState(false);
@@ -41,11 +40,17 @@ export const Navbar = () => {
     setSigningOut(true);
 
     try {
-      const signOutOptions = sessionId ? { sessionId } : undefined;
-      await signOut(signOutOptions);
-      clearTokenGetter();
+      clearTokenGetter();                              // clear token first
+      
+      // Let Clerk handle the state invalidation and the navigation atomically
+      // passing redirectUrl ensures it navigates ONLY when state is firmly cleared
+      await signOut({ redirectUrl: "/signin" });
+    } catch (err) {
+      console.error("Sign out failed", err);
+      // Fallback only if Clerk outright fails
       navigate("/signin", { replace: true });
     } finally {
+      // We don't need to unset these if we are navigating away, but just in case:
       setSigningOut(false);
       setSignOutOpen(false);
       setMenuOpen(false);

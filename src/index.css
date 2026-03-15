@@ -4,37 +4,154 @@
   @apply w-full rounded-xl bg-neutral-900 px-4 py-3 text-sm text-neutral-100 placeholder:text-neutral-500 border border-white/10 focus:outline-none focus:ring-1 focus:ring-neutral-400/50 focus:border-neutral-400/50 transition-all duration-200 ease-in-out hover:border-white/20;
 }
 
-
-
 @keyframes scaleIn {
   from {
     opacity: 0;
-    transform: scale(0.95);
+    transform: scale(0.95) translateY(6px);
   }
 
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1) translateY(0);
   }
 }
 
-.animate-scaleIn {
-  animation: scaleIn 0.2s ease-out forwards;
-}
-
-@keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.95) translateY(6px); }
-  to   { opacity: 1; transform: scale(1)    translateY(0);   }
-}
 .animate-scaleIn {
   animation: scaleIn 0.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 @keyframes heroUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
+
 @keyframes heroFade {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   CLERK OVERRIDES
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* ── Hide dev badge & default dev strings only ─────────────────────── */
+a[href*="clerk.com/docs"],
+a[href*="go.clerk.com"],
+a[href*="clerk.dev"],
+.cl-developmentModeNotice,
+.cl-devModeNotice,
+[data-clerk-development-mode],
+[class*="developmentMode"],
+[class*="devMode"],
+[class*="DevMode"] {
+  display: none !important;
+}
+
+/* ── Force text colours that Clerk variables miss ──────────────────────── */
+.cl-userProfile-root * {
+  color: #e5e5e5;
+}
+
+/* Ensure auth cards don't break mobile bounds */
+@media (max-width: 639px) {
+
+  .cl-rootBox,
+  .cl-cardBox,
+  .cl-card {
+    width: 100% !important;
+    max-width: 100vw !important;
+    box-sizing: border-box !important;
+  }
+}
+
+.cl-userProfile-root h1,
+.cl-userProfile-root h2,
+.cl-userProfile-root h3,
+.cl-userProfile-root [class*="headerTitle"],
+.cl-userProfile-root [class*="titleText"] {
+  color: #ffffff !important;
+}
+
+.cl-userProfile-root button,
+.cl-userProfile-root [role="menuitem"],
+.cl-userProfile-root [class*="navbarButton"] {
+  color: #e5e5e5 !important;
+}
+
+/* Ensure input fields actually take the dark background and white text */
+.cl-userProfile-root input,
+.cl-userProfile-root .cl-formFieldInput {
+  background-color: #151515 !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.cl-userProfile-root input:focus,
+.cl-userProfile-root .cl-formFieldInput:focus {
+  border-color: #8b5cf6 !important;
+  box-shadow: 0 0 0 1px #8b5cf6 !important;
+  outline: none !important;
+}
+
+/* Ensure active menu item text stays readable */
+.cl-userProfile-root [data-active="true"] {
+  color: #ffffff !important;
+}
+
+
+/* ── Card shadow & border ──────────────────────────────────────────────── */
+.cl-card {
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  box-shadow:
+    0 0 0 1px rgba(139, 92, 246, 0.06),
+    0 32px 80px -20px rgba(0, 0, 0, 0.85) !important;
+}
+
+/* ── Force text colours that Clerk sometimes overrides ────────────────── */
+.cl-headerTitle,
+[class*="headerTitle"] {
+  color: #ffffff !important;
+}
+
+.cl-headerSubtitle,
+[class*="headerSubtitle"] {
+  color: #94a3b8 !important;
+}
+
+.cl-formFieldLabel,
+label[class*="formFieldLabel"] {
+  color: #94a3b8 !important;
+}
+
+.cl-socialButtonsBlockButtonText,
+[class*="socialButtonsBlockButtonText"] {
+  color: #f1f5f9 !important;
+}
+
+.cl-footerActionText,
+[class*="footerActionText"] {
+  color: #64748b !important;
+}
+
+/* ── Root wrapper ─────────────────────────────────────────────────────── */
+.cl-rootBox {
+  width: 100% !important;
 }
