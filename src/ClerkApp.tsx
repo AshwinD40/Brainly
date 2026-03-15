@@ -16,69 +16,53 @@ if (!PUBLISHABLE_KEY) {
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const clerkAppearance = {
+  layout: {
+    socialButtonsPlacement: "bottom",
+    privacyPageUrl: "https://clerk.com/privacy",
+    termsPageUrl: "https://clerk.com/terms",
+  },
   variables: {
-    colorPrimary: "#f8fafc",
-    colorBackground: "transparent",
-    colorInputBackground: "rgba(2, 6, 23, 0.42)",
-    colorInputText: "#f8fafc",
-    colorText: "#f8fafc",
-    colorTextSecondary: "#cbd5e1",
-    colorNeutral: "#64748b",
-    borderRadius: "1rem",
+    colorPrimary: "#686868d0",
+    colorBackground: "#181818ff",
+    colorInputBackground: "#151515ff",
+    colorInputText: "#000000",
+    colorText: "#ffffff",
+
+    colorTextSecondary: "#e5e5e5",
+    colorNeutral: "#a3a3a3",
+    colorDanger: "#f87171",
+    colorSuccess: "#34d399",
+    borderRadius: "0.75rem",
+    fontFamily: "'Poppins', sans-serif",
+    fontSize: "14px",
   },
   elements: {
-    rootBox: "w-full",
-    cardBox: "w-full max-w-[440px]",
-    card: "rounded-[30px] border border-white/14 bg-[linear-gradient(180deg,rgba(30,41,59,0.88),rgba(15,23,42,0.96))] shadow-[0_34px_90px_-48px_rgba(0,0,0,0.98)] backdrop-blur-2xl",
-    headerTitle: "text-xl sm:text-2xl font-semibold tracking-tight text-white",
-    headerSubtitle: "text-sm text-neutral-300",
-    formFieldLabel: "text-sm font-medium text-neutral-300",
-    formFieldInput:
-      "h-11 rounded-2xl border border-white/14 bg-white/[0.08] text-white placeholder:text-neutral-400 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] focus:border-sky-300/45 focus:bg-white/[0.1]",
-    formFieldInputShowPasswordButton: "text-neutral-400 hover:text-white",
-    socialButtonsRoot: "gap-3",
-    socialButtonsBlockButton:
-      "h-11 rounded-2xl border border-white/16 bg-white/[0.12] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-white/28 hover:bg-white/[0.16]",
-    socialButtonsBlockButtonText: "font-medium text-neutral-100",
-    socialButtonsProviderIcon: "opacity-100 brightness-110",
-    dividerRow: "my-4",
-    dividerLine: "bg-white/10",
-    dividerText:
-      "px-3 text-[11px] uppercase tracking-[0.24em] text-neutral-400 bg-transparent",
-    formButtonPrimary:
-      "h-11 rounded-2xl bg-[linear-gradient(135deg,#f8fafc,#cbd5e1)] font-semibold text-slate-950 shadow-[0_16px_36px_-24px_rgba(248,250,252,0.85)] hover:brightness-105",
-    footerAction: "bg-transparent",
+    card: "border-none shadow-xl",
+    headerTitle: "text-white",
+    headerSubtitle: "text-neutral-200",
+    socialButtonsBlockButton: "border-none text-white bg-white/10 hover:bg-white/20",
+    formButtonPrimary: "bg-violet-600 hover:bg-violet-700 text-white",
+    // background and white text
+    formFieldInput: "border-none bg-[#141414] text-black focus:ring-1 focus:ring-violet-500",
     footerActionText: "text-neutral-400",
-    footerActionLink: "text-neutral-100 underline-offset-4 hover:text-white",
-    identityPreview: "rounded-2xl border border-white/10 bg-white/[0.05] shadow-none",
-    identityPreviewText: "text-neutral-100",
-    identityPreviewEditButton: "text-neutral-300 hover:text-white",
-    modalBackdrop:
-      "bg-[radial-gradient(circle_at_top,rgba(125,211,252,0.14),transparent_28%),rgba(3,7,18,0.72)] backdrop-blur-md",
-    modalContent:
-      "rounded-[32px] border border-white/12 bg-[linear-gradient(180deg,rgba(30,41,59,0.92),rgba(15,23,42,0.98))] p-1 shadow-[0_40px_100px_-52px_rgba(0,0,0,1)] backdrop-blur-2xl sm:p-2",
-    modalCloseButton:
-      "border border-white/10 bg-white/[0.05] text-neutral-300 hover:bg-white/[0.08] hover:text-white",
-    scrollBox: "bg-transparent",
-    pageScrollBox: "bg-transparent px-1 pb-1 sm:px-2 sm:pb-2",
-    page: "bg-transparent",
-    navbar:
-      "border-r border-white/10 bg-black/18 px-2 py-3 backdrop-blur-xl sm:px-3",
-    navbarButtons: "gap-1.5",
-    navbarButton:
-      "rounded-2xl px-3 py-2 text-neutral-300 transition hover:bg-white/[0.06] hover:text-white data-[active=true]:bg-white/[0.08] data-[active=true]:text-white",
-    navbarButtonIcon: "text-neutral-400",
-    navbarButtonText: "font-medium",
-    profileSection:
-      "rounded-[26px] border border-white/10 bg-white/[0.05] p-1 shadow-none",
-    profileSectionItemList: "gap-3",
-    profileSectionItem: "rounded-[22px] border border-white/8 bg-black/10 px-3 py-3",
-    profileSectionHeader: "px-3 pt-3",
-    profileSectionTitleText: "text-white",
-    profileSectionSubtitleText: "text-neutral-400",
-    profileSectionContent: "px-3 pb-3",
-    profileSectionPrimaryButton:
-      "rounded-2xl border border-white/12 bg-white/[0.06] text-white hover:bg-white/[0.1]",
+    footerActionLink: "text-violet-400 hover:text-violet-300",
+    navbar: "border-none bg-[#272727]",
+    scrollBox: "bg-[#272727]",
+    pageScrollBox: "bg-[#272727]",
+    page: "bg-[#272727]",
+    profileSection: "border-none bg-[#2f2f2f]",
+    profileSectionItem: "border-none bg-[#3f3f3f]/50",
+    badge: "border-none bg-violet-500/10 text-violet-400",
+
+    navbarButtonText: "text-[#e5e5e5] font-medium",
+    navbarButtonIcon: "text-[#a3a3a3]",
+    profileSectionTitleText: "text-white font-semibold",
+    profileSectionSubtitleText: "text-[#e5e5e5]",
+    profileSectionPrimaryButton: "text-[#e5e5e5] bg-[#3f3f3f] hover:bg-[#4f4f4f] border-none",
+    identityPreviewText: "text-white",
+    identityPreviewEditButton: "text-violet-400 hover:text-violet-300",
+    // Fix uploaded avatar / text buttons
+    profileSectionPrimaryButtonText: "text-white",
   },
 } as const;
 
@@ -120,10 +104,11 @@ export default function ClerkApp() {
       publishableKey={PUBLISHABLE_KEY}
       signInUrl={SIGN_IN_PATH}
       signUpUrl={SIGN_UP_PATH}
-      signInForceRedirectUrl={DASHBOARD_PATH}
-      signUpForceRedirectUrl={DASHBOARD_PATH}
+      afterSignOutUrl="/signin"
       signInFallbackRedirectUrl={DASHBOARD_PATH}
       signUpFallbackRedirectUrl={DASHBOARD_PATH}
+      signInForceRedirectUrl={DASHBOARD_PATH}
+      signUpForceRedirectUrl={DASHBOARD_PATH}
       appearance={clerkAppearance}
     >
       <TokenSync />
