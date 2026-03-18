@@ -1,14 +1,14 @@
 import API from "./axios";
 import type { Content } from "../types/content";
 
-export interface CreateContentPayload {
+interface CreateContentPayload {
   title: string;
   type: string;
   link: string;
   tags?: string[];
 }
 
-export interface CreateContentResponse {
+interface CreateContentResponse {
   content: Content;
 }
 

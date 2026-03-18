@@ -10,8 +10,4 @@ export const getTwitterId = (url: string): string | null => {
   return match ? match[3] : null;
 };
 
-export const getInstagramId = (url: string): string | null => {
-  const regExp = /^https?:\/\/(www\.)?instagram\.com\/(p|reel)\/([a-zA-Z0-9_-]+)/;
-  const match = url.match(regExp);
-  return match ? match[3] : null;
-}
+

@@ -66,7 +66,7 @@ const clerkAppearance = {
   },
 } as const;
 
-export function TokenSync() {
+function TokenSync() {
   const { getToken, isLoaded, isSignedIn } = useAuth({
     treatPendingAsSignedOut: false,
   });
