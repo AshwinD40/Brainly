@@ -1,130 +1,62 @@
 # Brainly
 
-Brainly is a full-stack "second brain" app for saving links, organizing personal knowledge, and sharing a read-only public view of your saved content.
+Brainly is a "second brain" full-stack application built for saving, organizing, and sharing links and digital content.
 
-## Features
+## 🏗️ Tech Stack
 
-- User authentication with Clerk (`signup`, `signin`, social providers)
-- Create, view, and delete personal content entries
-- Content types support: `youtube`, `twitter`, `instagram`, `article`, `audio`, `video`, `image`, `other`
-- Shareable brain link with persistent `shareId`
-- Public shared-brain page (read-only)
-- Production preflight checks before backend startup
+- **Frontend**: React 19, TypeScript, Vite, Tailwind CSS.
+- **Backend**: Node.js, Express 5, TypeScript. 
+- **Database**: MongoDB (managed via Mongoose).
+- **Authentication**: Clerk (Frontend session management + Backend token verification).
 
-## Tech Stack
+## 🧠 The Workflow
 
-- Frontend: React 19, TypeScript, Vite, Tailwind CSS, Axios, React Router
-- Backend: Node.js, Express 5, TypeScript, MongoDB, Mongoose, Clerk
-- Tooling: ESLint, Nodemon, TSX, TypeScript compiler
+Here is how the distinct pieces of the stack talk to each other:
 
-## Project Structure
+1. **Authentication**: Users sign up or log in via the Clerk React SDK. Clerk securely handles the heavy lifting of session state and issues an authentication token.
+2. **Frontend Requests**: The React app uses Axios to communicate with the backend. An Axios interceptor automatically grabs the latest Clerk token and attaches it to the `Authorization` header of every outgoing request.
+3. **Backend Validation**: The Express server receives the request on `/api/v1/*`. Protected routes run through Clerk's Express middleware, which validates the JWT token and extracts the user's secure ID.
+4. **Database Operations**: With the user's identity confirmed, the backend uses Mongoose to interact with MongoDB. It performs CRUD operations (creating, fetching, or deleting content), ensuring users can only access data tied to their specific ID.
+5. **Public Sharing**: Users can generate a unique `shareId` to publish their "brain". When someone visits a shared link, the frontend hits a designated public route (`GET /brain/:shareId`). The backend bypasses authentication for this specific endpoint and returns the read-only data associated with that hash.
 
-```text
-Brainly/
-  src/                  # Frontend source
-  public/               # Frontend static assets
-  Server/
-    src/                # Backend source
-    scripts/preflight.mjs
+## 🚀 Running Locally
+
+You'll need Node.js 20+, npm, and a MongoDB instance (local or Atlas).
+
+**1. Install dependencies**
+```bash
+npm install              # Frontend deps
+cd Server && npm install # Backend deps
 ```
 
-## Prerequisites
+**2. Configure Environment Variables**
 
-- Node.js 20+ recommended
-- npm 10+ recommended
-- MongoDB database (Atlas or self-hosted)
-
-## Environment Variables
-
-### Frontend (`.env` at repo root)
-
+Create a `.env` in the **root** folder:
 ```env
 VITE_BACKEND_URL=http://localhost:4000
-VITE_CLERK_PUBLISHABLE_KEY=pk_test_...
+VITE_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
 ```
 
-### Backend (`Server/.env`)
-
+Create a `.env` in the **`Server/`** folder:
 ```env
-NODE_ENV=development
 PORT=4000
-MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>/<database>
-CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
+MONGODB_URI=your_mongodb_connection_string
+CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+CLERK_SECRET_KEY=your_clerk_secret_key
 CORS_ORIGINS=http://localhost:5173
 ```
 
-Notes:
-
-- `VITE_BACKEND_URL` can be set either as `https://host` or `https://host/api/v1`.
-- Backend normalizes this automatically on the frontend API client.
-- Clerk keys are required for frontend and backend auth to work.
-- In local development, the backend also falls back to the repo-root `VITE_CLERK_PUBLISHABLE_KEY` if `Server/.env` does not define `CLERK_PUBLISHABLE_KEY`.
-- Do not commit real secrets to source control.
-
-## Local Development
-
-1. Install frontend dependencies:
-
-```bash
-npm install
-```
-
-2. Install backend dependencies:
-
-```bash
-cd Server
-npm install
-cd ..
-```
-
-3. Configure `.env` (root) and `Server/.env`.
-
-4. Start frontend + backend together:
-
+**3. Start the application**
 ```bash
 npm run dev
 ```
+This commands runs `concurrently`, spinning up both the Vite frontend (`localhost:5173`) and the Nodemon backend server (`localhost:4000`) simultaneously.
 
-Default local URLs:
+## 📦 Production Notes
 
-- Frontend: `http://localhost:5173`
-- Backend: `http://localhost:4000`
+- **Frontend Build**: Run `npm run build` to compile the Vite application into static production assets.
+- **Backend Build**: Navigate to `Server/` and run `npm run build` to transpile TypeScript into `Server/dist`.
+- **Preflight Checks**: The backend utilizes a `npm run preflight` script. When you run `npm start` in production, it automatically verifies that critical environment variables exist before booting up the Express server.
 
-## Scripts
-
-### Root Scripts
-
-- `npm run dev` - Run frontend and backend in parallel
-- `npm run build` - Build frontend production bundle
-- `npm run lint` - Run ESLint
-- `npm run preview` - Preview built frontend
-
-### Backend Scripts (`Server/`)
-
-- `npm run dev` - Start backend in watch mode (nodemon + tsx)
-- `npm run build` - Compile backend TypeScript to `Server/dist`
-- `npm run preflight` - Validate production-critical env/runtime checks
-- `npm start` - Run preflight, then start backend from `dist/index.js`
-
-## API Overview
-
-Base path: `/api/v1`
-
-- `POST /content/createContent` (auth required)
-- `GET /content/user` (auth required)
-- `DELETE /content/:id` (auth required)
-- `POST /brain/share` (auth required)
-- `POST /brain/unshare` (auth required)
-- `GET /brain/:shareId` (public)
-
-## Production Notes
-
-- Build backend before startup: `cd Server && npm run build`
-- Startup runs preflight automatically: `npm start`
-- Set environment variables in your deployment platform (Render/Vercel/etc.)
-- Keep `CORS_ORIGINS` restricted to trusted frontend domains
-
-## Author
-
-Ashwin Chaudhary
+---
+**Author**: Ashwin Chaudhary

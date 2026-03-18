@@ -1,6 +1,6 @@
 import React from "react";
 
-export interface ButtonProps {
+interface ButtonProps {
   varient: "primary" | "secondary" | "danger";
   size: "sm" | "md" | "lg";
   text: string;
