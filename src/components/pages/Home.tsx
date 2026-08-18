@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { useAuth, useUser } from "@clerk/react-router";
 import { FaShare } from "react-icons/fa6";
 import { IoMdAddCircle } from "react-icons/io";
+import { useAuth } from "../../context/AuthContext";
 import { shareBrain } from "../../api/brain";
 import { deleteContent, getUserContents } from "../../api/content";
 import type { Content } from "../../types/content";
@@ -15,12 +15,10 @@ import { ContentTypeFilterBar } from "../core/ContentTypeFilter";
 import type { ContentTypeFilter } from "../core/ContentTypeFilter";
 import { Navbar } from "../core/Navbar";
 import { QuickCaptureBar } from "../core/QuickCapturebar";
-import { StatsBar } from "../core/StatsBar";
 
 export const Home = () => {
-  const { isLoaded, isSignedIn } = useAuth();
-  const { user } = useUser();
-  const displayName = user?.firstName ?? user?.username ?? "friend";
+  const { user } = useAuth();
+  const displayName = user?.username ?? "friend";
 
   const [data, setData] = useState<Content[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,13 +31,9 @@ export const Home = () => {
   } | null>(null);
 
   useEffect(() => {
-    if (!isLoaded || !isSignedIn) {
-      return;
-    }
-
     let cancelled = false;
 
-    const fetchData = async (attempt = 0) => {
+    const fetchData = async () => {
       try {
         setLoading(true);
         const res = await getUserContents();
@@ -48,16 +42,6 @@ export const Home = () => {
           setData(res.data.contents || []);
         }
       } catch (error) {
-        if (
-          axios.isAxiosError(error) &&
-          error.response?.status === 401 &&
-          attempt < 2
-        ) {
-          await new Promise((resolve) => setTimeout(resolve, 350 * (attempt + 1)));
-          await fetchData(attempt + 1);
-          return;
-        }
-
         const message = axios.isAxiosError<{ message?: string }>(error)
           ? (error.response?.data?.message ?? error.message)
           : "Failed to load content";
@@ -77,13 +61,13 @@ export const Home = () => {
     return () => {
       cancelled = true;
     };
-  }, [isLoaded, isSignedIn]);
+  }, []);
 
   const filteredData = useMemo(() => {
     if (activeFilter === "all") return data;
     return data.filter((item) => item.type === activeFilter);
   }, [data, activeFilter]);
-  
+
   const openCreateModal = () => {
     setCaptureInitialData(null);
     setCreateModalOpen(true);
@@ -166,7 +150,6 @@ export const Home = () => {
               style={{ animation: "heroFade 0.6s 0.32s ease both", animationFillMode: "backwards" }}
             />
 
-            {/* ── Buttons — your existing props, untouched ── */}
             <div
               className="flex flex-col gap-3 sm:flex-row"
               style={{ animation: "heroUp 0.6s 0.38s ease both", animationFillMode: "backwards" }}
@@ -189,7 +172,6 @@ export const Home = () => {
               />
             </div>
 
-            {/* ── Quick Capture ── */}
             <div
               className="mt-7 w-full max-w-lg"
               style={{ animation: "heroUp 0.6s 0.5s ease both", animationFillMode: "backwards" }}
@@ -201,11 +183,16 @@ export const Home = () => {
         </section>
 
 
-        {!loading && <StatsBar data={data} />}
-
         <div className="mx-auto w-[90%] max-w-7xl">
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
-            <h2 className="shrink-0 text-lg font-bold text-neutral-200">Your Content</h2>
+          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-white/5 pb-5">
+            <div className="flex items-center gap-3">
+              <h2 className="text-xl font-bold tracking-tight text-white">Your Content</h2>
+              {!loading && data.length > 0 && (
+                <span className="rounded-full border border-violet-500/30 bg-violet-500/10 px-2.5 py-0.5 text-xs font-semibold text-violet-300">
+                  {data.length} {data.length === 1 ? "item" : "items"}
+                </span>
+              )}
+            </div>
             {!loading && data.length > 0 && (
               <ContentTypeFilterBar
                 active={activeFilter}
@@ -251,7 +238,7 @@ export const Home = () => {
               </button>
             </div>
           ) : (
-            <div className="columns-1 space-y-6 gap-6 pb-10 sm:columns-2 lg:columns-3 xl:columns-4 2xl:columns-5">
+            <div className="columns-1 space-y-6 gap-6 pb-10 sm:columns-2 lg:columns-3 xl:columns-4">
               {filteredData.map((item) => (
                 <div key={item._id} className="break-inside-avoid">
                   <ContentCard item={item} onDelete={() => setDeleteId(item._id)} />

@@ -2,7 +2,7 @@ import mongoose, { Schema, type Document } from "mongoose";
 import { nanoid } from "nanoid";
 
 export interface IBrain extends Document {
-  clerkUserId: string;
+  userId: mongoose.Types.ObjectId;
   shareId: string;
   isShared: boolean;
   createdAt: Date;
@@ -11,7 +11,7 @@ export interface IBrain extends Document {
 
 const BrainSchema = new Schema<IBrain>(
   {
-    clerkUserId: { type: String, required: true, unique: true, index: true },
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true, unique: true, index: true },
     shareId: { type: String, default: () => nanoid(12), unique: true },
     isShared: { type: Boolean, default: false },
   },

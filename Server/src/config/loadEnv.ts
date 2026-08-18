@@ -18,10 +18,3 @@ for (const envFile of envFiles) {
     dotenv.config({ path: envFile, override: false });
   }
 }
-
-const clerkPublishableKey = process.env.CLERK_PUBLISHABLE_KEY?.trim();
-const viteClerkPublishableKey = process.env.VITE_CLERK_PUBLISHABLE_KEY?.trim();
-
-if (!clerkPublishableKey && viteClerkPublishableKey) {
-  process.env.CLERK_PUBLISHABLE_KEY = viteClerkPublishableKey;
-}

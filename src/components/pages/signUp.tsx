@@ -1,94 +1,210 @@
-import { SignUp, useAuth } from "@clerk/react-router";
-import { Navigate } from "react-router";
+import { useState, type FormEvent } from "react";
+import { Link, Navigate, useNavigate } from "react-router";
+import { GoogleLogin } from "@react-oauth/google";
+import toast from "react-hot-toast";
+import axios from "axios";
+import { FiUser, FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight } from "react-icons/fi";
+import { useAuth } from "../../context/AuthContext";
+import favicon from "../../assets/favicon.png";
 
 const SignUpPage = () => {
-  const { isLoaded, isSignedIn } = useAuth();
+  const { user, loading, signup, signinWithGoogle } = useAuth();
+  const navigate = useNavigate();
 
-  if (!isLoaded) {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  if (loading) {
     return (
-      <main className="flex min-h-[100dvh] items-center justify-center bg-[#0a0a0a]">
-        <div className="h-5 w-5 rounded-full border-2 border-fuchsia-500 border-t-transparent animate-spin" />
+      <main className="flex min-h-screen items-center justify-center bg-neutral-950 text-neutral-400 font-sans text-sm">
+        <div className="h-6 w-6 rounded-full border-2 border-violet-500 border-t-transparent animate-spin" />
       </main>
     );
   }
 
-  if (isSignedIn) {
+  if (user) {
     return <Navigate to="/" replace />;
   }
 
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!username || !email || !password) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      await signup({ username, email, password });
+      toast.success("Account created successfully!");
+      navigate("/");
+    } catch (err) {
+      const message = axios.isAxiosError<{ message?: string }>(err)
+        ? (err.response?.data?.message ?? err.message)
+        : "Failed to sign up";
+      toast.error(message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse: { credential?: string }) => {
+    if (!credentialResponse.credential) {
+      toast.error("Google sign-up failed");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      await signinWithGoogle(credentialResponse.credential);
+      toast.success("Signed up with Google!");
+      navigate("/");
+    } catch (err) {
+      const message = axios.isAxiosError<{ message?: string }>(err)
+        ? (err.response?.data?.message ?? err.message)
+        : "Google authentication failed";
+      toast.error(message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
-    <main className="flex min-h-[100dvh] w-full bg-[#0a0a0a]">
-      {/* ── Left Side: Marketing & Branding (Hidden on Mobile) ── */}
-      <div className="relative hidden w-1/2 flex-col justify-between overflow-hidden border-r border-white/5 bg-[#121212] lg:flex">
-        {/* Background glow effects */}
-        <div aria-hidden className="absolute inset-0 z-0">
-          <div className="absolute -left-1/4 -top-1/4 h-[800px] w-[800px] rounded-full bg-fuchsia-600/10 blur-[120px]" />
-          <div className="absolute -bottom-1/4 -right-1/4 h-[600px] w-[600px] rounded-full bg-orange-600/10 blur-[100px]" />
-        </div>
+    <main className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-neutral-950 px-4 py-8 text-neutral-100 font-sans">
+      <div className="pointer-events-none absolute -top-40 left-1/2 h-[450px] w-[600px] -translate-x-1/2 rounded-full bg-gradient-to-b from-violet-600/25 via-indigo-600/10 to-transparent blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-40 right-[-10%] h-[400px] w-[500px] rounded-full bg-purple-600/15 blur-3xl" />
+      <div className="pointer-events-none absolute top-1/2 -left-40 h-[350px] w-[450px] -translate-y-1/2 rounded-full bg-indigo-600/10 blur-3xl" />
 
-        {/* Top Logo */}
-        <div className="relative z-10 p-12">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-fuchsia-600/20 shadow-[0_0_15px_rgba(192,38,211,0.3)]">
-              <svg className="h-6 w-6 text-fuchsia-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-            </div>
-            <span className="text-2xl font-bold tracking-tight text-white">Brainly</span>
+      <div className="relative w-full max-w-md">
+        <div className="rounded-3xl border border-white/10 bg-neutral-900/60 p-8 sm:p-10 shadow-[0_24px_80px_-15px_rgba(0,0,0,0.8),0_0_50px_rgba(139,92,246,0.1)] backdrop-blur-2xl">
+
+          <div className="mb-7 flex flex-col items-center text-center">
+            <Link
+              to="/"
+              className="group mb-4 flex items-center justify-center rounded-2xl border border-white/10 bg-neutral-950/70 p-2.5 shadow-lg shadow-violet-950/30 transition-all duration-300 hover:border-violet-500/40 hover:scale-105"
+            >
+              <img
+                src={favicon}
+                alt="Brainly"
+                className="h-8 w-8 object-contain rounded-lg"
+              />
+            </Link>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
+              Create an account
+            </h1>
+            <p className="mt-1.5 text-sm text-neutral-400">
+              Start organizing your personal knowledge base
+            </p>
           </div>
-        </div>
 
-        {/* Middle Content */}
-        <div className="relative z-10 flex flex-col justify-center px-12 pb-24 max-w-2xl">
-          <h1 className="mb-6 text-5xl font-extrabold tracking-tight text-white md:text-6xl lg:leading-[1.1]">
-            Start your <br />
-            <span className="bg-gradient-to-r from-fuchsia-400 to-orange-400 bg-clip-text text-transparent">
-              journey today.
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-1.5">
+              <label htmlFor="username" className="block text-xs font-medium text-neutral-300">
+                Username
+              </label>
+              <div className="relative flex items-center">
+                <FiUser className="pointer-events-none absolute left-3.5 text-sm text-neutral-500" />
+                <input
+                  id="username"
+                  type="text"
+                  required
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="yourname"
+                  className="w-full rounded-xl border border-white/10 bg-neutral-950/60 py-2.5 pl-10 pr-4 text-sm text-white placeholder-neutral-500 backdrop-blur-md transition-all duration-200 focus:border-violet-500/60 focus:bg-neutral-950/90 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label htmlFor="email" className="block text-xs font-medium text-neutral-300">
+                Email address
+              </label>
+              <div className="relative flex items-center">
+                <FiMail className="pointer-events-none absolute left-3.5 text-sm text-neutral-500" />
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  className="w-full rounded-xl border border-white/10 bg-neutral-950/60 py-2.5 pl-10 pr-4 text-sm text-white placeholder-neutral-500 backdrop-blur-md transition-all duration-200 focus:border-violet-500/60 focus:bg-neutral-950/90 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <label htmlFor="password" className="block text-xs font-medium text-neutral-300">
+                Password
+              </label>
+              <div className="relative flex items-center">
+                <FiLock className="pointer-events-none absolute left-3.5 text-sm text-neutral-500" />
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full rounded-xl border border-white/10 bg-neutral-950/60 py-2.5 pl-10 pr-10 text-sm text-white placeholder-neutral-500 backdrop-blur-md transition-all duration-200 focus:border-violet-500/60 focus:bg-neutral-950/90 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 p-1 text-neutral-500 hover:text-neutral-300 transition-colors"
+                  title={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <FiEyeOff className="text-sm" /> : <FiEye className="text-sm" />}
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="group relative mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 py-3 text-sm font-semibold text-white shadow-lg shadow-violet-600/30 transition-all duration-200 hover:from-violet-500 hover:to-purple-500 hover:shadow-violet-600/40 active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+            >
+              {isSubmitting ? (
+                <div className="h-4 w-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
+              ) : (
+                <>
+                  <span>Create Account</span>
+                  <FiArrowRight className="text-sm transition-transform duration-200 group-hover:translate-x-0.5" />
+                </>
+              )}
+            </button>
+          </form>
+
+          <div className="relative my-8 flex items-center justify-center">
+            <span className="w-full border-t border-white/10" />
+            <span className="absolute rounded-full bg-neutral-900/90 px-3 py-0.5 text-[11px] font-medium uppercase tracking-wider text-neutral-500 backdrop-blur-md border border-white/5">
+              or sign up with Google
             </span>
-          </h1>
-          <p className="mb-10 text-lg leading-relaxed text-neutral-400">
-            Create an account in seconds and unlock the most powerful way to capture thoughts and manage your daily projects.
+          </div>
+
+          <div className="flex justify-center w-full">
+            <div className="rounded-full border border-white/10 bg-neutral-950/10 p-0.5 backdrop-blur-md shadow-inner transition-all hover:border-white/20">
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => toast.error("Google Login Failed")}
+                theme="filled_black"
+                shape="pill"
+                text="signup_with"
+              />
+            </div>
+          </div>
+
+          <p className="mt-6 text-center text-xs text-neutral-400">
+            Already have an account?{" "}
+            <Link to="/signin" className="font-semibold text-violet-400 transition-colors hover:text-violet-300">
+              Sign in
+            </Link>
           </p>
 
-          <div className="flex items-center gap-4 text-sm font-medium text-neutral-300">
-            <div className="flex -space-x-3">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="h-10 w-10 rounded-full border-2 border-[#121212] bg-neutral-800 flex items-center justify-center overflow-hidden">
-                   <img src={`https://api.dicebear.com/7.x/notionists/svg?seed=${i + 40}`} alt="User avatar" />
-                </div>
-              ))}
-            </div>
-            <p>Join 10,000+ thinkers</p>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Right Side: Auth Form ── */}
-      <div className="relative flex w-full flex-col items-center justify-center bg-[#0a0a0a] p-4 lg:w-1/2 lg:p-12">
-        {/* Subtle mobile-only glow */}
-        <div aria-hidden className="absolute inset-0 z-0 lg:hidden pointer-events-none">
-          <div className="absolute left-1/2 top-1/2 h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-fuchsia-600/10 blur-[100px]" />
-        </div>
-
-        {/* Mobile Logo */}
-        <div className="mb-8 flex items-center justify-center gap-2 lg:hidden w-full relative z-10">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-fuchsia-600/20">
-              <svg className="h-6 w-6 text-fuchsia-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-            </div>
-            <span className="text-2xl font-bold tracking-tight text-white">Brainly</span>
-        </div>
-
-        {/* Form Container */}
-        <div className="relative z-10 w-full max-w-full sm:max-w-[420px]">
-          <SignUp
-            path="/signup"
-            routing="path"
-            signInUrl="/signin"
-            forceRedirectUrl="/"
-            fallbackRedirectUrl="/"
-          />
         </div>
       </div>
     </main>

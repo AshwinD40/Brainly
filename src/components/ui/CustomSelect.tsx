@@ -44,7 +44,7 @@ export const CustomSelect = ({
 
       updatePosition();
       window.addEventListener("resize", updatePosition);
-      window.addEventListener("scroll", updatePosition, true); // true to capture all scrolls
+      window.addEventListener("scroll", updatePosition, true);
 
       return () => {
         window.removeEventListener("resize", updatePosition);
@@ -75,12 +75,10 @@ export const CustomSelect = ({
         </motion.div>
       </button>
 
-      {/* Portal for Dropdown */}
       {createPortal(
         <AnimatePresence>
           {isOpen && (
             <>
-              {/* Invisible Backdrop to handle 'click outside' */}
               <div
                 className="fixed inset-0 z-9998 cursor-default"
                 onClick={() => setIsOpen(false)}
@@ -92,7 +90,7 @@ export const CustomSelect = ({
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
                 style={{
-                  top: position.top + 8, // Add a little gap
+                  top: position.top + 8,
                   left: position.left,
                   width: position.width,
                 }}
@@ -104,7 +102,7 @@ export const CustomSelect = ({
                       key={option.value}
                       type="button"
                       onClick={(e) => {
-                        e.stopPropagation(); // Prevent closing immediately via backdrop (though it's behind)
+                        e.stopPropagation();
                         onChange(option.value);
                         setIsOpen(false);
                       }}

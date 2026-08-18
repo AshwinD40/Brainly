@@ -3,12 +3,9 @@ import { requireAuth } from "../middleware/auth.js";
 import { Content } from "../models/Content.js";
 
 const router = Router();
-const buildOwnerQuery = (userId: string) => ({
-  $or: [{ userId }, { clerkUserId: userId }],
-});
 
 router.post("/createContent", requireAuth, async (req, res) => {
-  const authUserId = req.clerkUserId;
+  const userId = req.userId;
   const { title, type, link, tags } = req.body as {
     title?: string;
     type?: string;
@@ -16,7 +13,7 @@ router.post("/createContent", requireAuth, async (req, res) => {
     tags?: unknown;
   };
 
-  if (!authUserId) {
+  if (!userId) {
     res.status(401).json({ message: "Unauthorized" });
     return;
   }
@@ -32,10 +29,9 @@ router.post("/createContent", requireAuth, async (req, res) => {
 
   try {
     const content = await Content.create({
-      userId: authUserId,
-      clerkUserId: authUserId,
+      userId,
       title: title.trim(),
-      type,
+      type: type as any,
       link: link.trim(),
       tags: normalizedTags,
     });
@@ -47,15 +43,17 @@ router.post("/createContent", requireAuth, async (req, res) => {
 });
 
 router.get("/user", requireAuth, async (req, res) => {
-  const authUserId = req.clerkUserId;
+  const userId = req.userId;
 
-  if (!authUserId) {
+  if (!userId) {
     res.status(401).json({ message: "Unauthorized" });
     return;
   }
 
   try {
-    const contents = await Content.find(buildOwnerQuery(authUserId)).sort({ createdAt: -1 });
+    const contents = await Content.find({ userId })
+      .sort({ createdAt: -1 })
+      .lean();
     res.json({ contents });
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch content", error: err });
@@ -63,10 +61,10 @@ router.get("/user", requireAuth, async (req, res) => {
 });
 
 router.delete("/:id", requireAuth, async (req, res) => {
-  const authUserId = req.clerkUserId;
+  const userId = req.userId;
   const contentId = req.params["id"];
 
-  if (!authUserId) {
+  if (!userId) {
     res.status(401).json({ message: "Unauthorized" });
     return;
   }
@@ -79,7 +77,7 @@ router.delete("/:id", requireAuth, async (req, res) => {
   try {
     const deleted = await Content.findOneAndDelete({
       _id: contentId,
-      ...buildOwnerQuery(authUserId),
+      userId,
     });
 
     if (!deleted) {

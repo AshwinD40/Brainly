@@ -44,7 +44,6 @@ const TYPE_COLOR: Record<string, string> = {
   article: "text-emerald-400",
 };
 
-// dot colour per type — mirrors TYPE_COLOR but as bg
 const DOT_COLOR: Record<string, string> = {
   youtube:   "bg-red-400",
   twitter:   "bg-sky-400",
@@ -71,7 +70,6 @@ export const QuickCaptureBar = ({ onCapture }: QuickCaptureBarProps) => {
     setValue("");
   };
 
-  // ─── NEW RETURN ────────────────────────────────────────────────────────────
   return (
     <div
       className={`
@@ -83,9 +81,6 @@ export const QuickCaptureBar = ({ onCapture }: QuickCaptureBarProps) => {
         }
       `}
     >
-      
-
-      {/* Glass body */}
       <div
         className={`
           relative rounded-[1.55rem] px-3 py-3 sm:px-4 sm:py-3.5
@@ -97,8 +92,6 @@ export const QuickCaptureBar = ({ onCapture }: QuickCaptureBarProps) => {
         `}
       >
         <div className="flex flex-col items-center gap-2.5">
-
-          {/* Type pill */}
           <div className="inline-flex w-fit max-w-full items-center gap-2 rounded-full border border-white/8 bg-black/40 px-3 py-1.5 text-[11px] text-neutral-400 backdrop-blur-sm">
             <span
               className={`
@@ -118,7 +111,6 @@ export const QuickCaptureBar = ({ onCapture }: QuickCaptureBarProps) => {
             )}
           </div>
 
-          {/* Input row */}
           <div
             className={`
               flex w-full items-center gap-2 rounded-2xl border px-3 py-2 sm:py-2.5
@@ -145,7 +137,6 @@ export const QuickCaptureBar = ({ onCapture }: QuickCaptureBarProps) => {
               "
             />
 
-            {/* Save button — smooth width transition, no layout jump */}
             <div
               className={`
                 shrink-0 overflow-hidden transition-all duration-200

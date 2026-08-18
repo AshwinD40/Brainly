@@ -1,8 +1,7 @@
 import mongoose, { Schema, type Document } from "mongoose";
 
 export interface IContent extends Document {
-  userId: string;
-  clerkUserId?: string;
+  userId: mongoose.Types.ObjectId;
   title: string;
   type: "youtube" | "twitter" | "instagram" | "article" | "audio" | "video" | "image" | "other";
   link: string;
@@ -13,8 +12,7 @@ export interface IContent extends Document {
 
 const ContentSchema = new Schema<IContent>(
   {
-    userId: { type: String, required: true, index: true },
-    clerkUserId: { type: String, index: true },
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true, index: true },
     title: { type: String, required: true, trim: true },
     type: {
       type: String,
@@ -27,17 +25,6 @@ const ContentSchema = new Schema<IContent>(
   { timestamps: true }
 );
 
-ContentSchema.pre("validate", function () {
-  const userId = this.get("userId") as string | undefined;
-  const clerkUserId = this.get("clerkUserId") as string | undefined;
-
-  if (!userId && clerkUserId) {
-    this.set("userId", clerkUserId);
-  }
-
-  if (!clerkUserId && userId) {
-    this.set("clerkUserId", userId);
-  }
-});
+ContentSchema.index({ userId: 1, createdAt: -1 });
 
 export const Content = mongoose.model<IContent>("Content", ContentSchema);
