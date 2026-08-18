@@ -84,9 +84,6 @@ export const ConfirmationModal = ({
             </div>
 
             <div className="min-w-0 flex-1">
-              <p className="text-[11px] uppercase tracking-[0.28em] text-neutral-500">
-                {isDanger ? "Please confirm" : "Action required"}
-              </p>
               <h3 className="mt-2 text-lg font-semibold tracking-tight text-white sm:text-[1.15rem]">
                 {title}
               </h3>
@@ -98,12 +95,12 @@ export const ConfirmationModal = ({
             </div>
           </div>
 
-          <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <div className="mt-6 flex flex-col-reverse gap-2 curser-pointer sm:flex-row sm:justify-end">
             <button
               type="button"
               onClick={onCancel}
               disabled={loading}
-              className="inline-flex h-11 items-center justify-center rounded-2xl border border-white/10 bg-white/4 px-4 text-sm font-medium text-neutral-300 transition-all hover:border-white/16 hover:bg-white/8 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex h-11  items-center justify-center rounded-2xl border border-white/10 bg-white/4 px-4 text-sm font-medium text-neutral-300 transition-all hover:border-white/16 hover:bg-white/8 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
             >
               {cancelText}
             </button>

@@ -4,9 +4,7 @@ import { Brain } from "../models/Brain.js";
 import { Content } from "../models/Content.js";
 
 const router = Router();
-const buildOwnerQuery = (userId: string) => ({
-  $or: [{ userId }, { clerkUserId: userId }],
-});
+
 const setNoStoreHeaders = (res: Response) => {
   res.set({
     "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
@@ -17,17 +15,17 @@ const setNoStoreHeaders = (res: Response) => {
 };
 
 router.post("/share", requireAuth, async (req, res) => {
-  const clerkUserId = req.clerkUserId;
+  const userId = req.userId;
 
-  if (!clerkUserId) {
+  if (!userId) {
     res.status(401).json({ message: "Unauthorized" });
     return;
   }
 
   try {
     const brain = await Brain.findOneAndUpdate(
-      { clerkUserId },
-      { clerkUserId, isShared: true },
+      { userId },
+      { userId, isShared: true },
       { upsert: true, new: true }
     );
 
@@ -43,15 +41,15 @@ router.post("/share", requireAuth, async (req, res) => {
 });
 
 router.post("/unshare", requireAuth, async (req, res) => {
-  const clerkUserId = req.clerkUserId;
+  const userId = req.userId;
 
-  if (!clerkUserId) {
+  if (!userId) {
     res.status(401).json({ message: "Unauthorized" });
     return;
   }
 
   try {
-    await Brain.findOneAndUpdate({ clerkUserId }, { isShared: false });
+    await Brain.findOneAndUpdate({ userId }, { isShared: false });
     res.json({ message: "Brain is now private" });
   } catch (err) {
     res.status(500).json({ message: "Failed to unshare brain", error: err });
@@ -72,10 +70,8 @@ router.get("/:shareId", async (req, res) => {
       return;
     }
 
-    const contents = await Content.find(buildOwnerQuery(brain.clerkUserId))
-      .sort({
-        createdAt: -1,
-      })
+    const contents = await Content.find({ userId: brain.userId })
+      .sort({ createdAt: -1 })
       .lean();
 
     res.json({

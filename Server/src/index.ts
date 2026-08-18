@@ -3,7 +3,7 @@ import cors from "cors";
 import express, { type ErrorRequestHandler } from "express";
 import mongoose from "mongoose";
 import { configureDNS } from "./config/dns.js";
-import { clerkMiddleware } from "./middleware/auth.js";
+import userRouter from "./routes/user.js";
 import brainRouter from "./routes/brain.js";
 import contentRouter from "./routes/content.js";
 
@@ -49,8 +49,7 @@ app.get("/api/v1/health", (_req, res) => {
   res.json({ status: "ok" });
 });
 
-app.use(clerkMiddleware());
-
+app.use("/api/v1/user", userRouter);
 app.use("/api/v1/content", contentRouter);
 app.use("/api/v1/brain", brainRouter);
 
